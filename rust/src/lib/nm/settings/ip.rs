@@ -131,8 +131,8 @@ fn gen_nm_ipv4_setting(
     if let Some(dns) = &iface_ip.dns {
         apply_nm_dns_setting(&mut nm_setting, dns);
     }
-    // Discard DNS inherited from the existing profile, otherwise
-    // NetworkManager refuses the profile.
+    // NetworkManager rejects DNS nameservers and searches for the `disabled`
+    // method, so discard any inherited from the existing profile.
     if nm_setting.method == Some(NmSettingIpMethod::Disabled) {
         remove_nm_dns_srvs_and_searches(&mut nm_setting);
     }
@@ -271,8 +271,9 @@ fn gen_nm_ipv6_setting(
     if let Some(dns) = &iface_ip.dns {
         apply_nm_dns_setting(&mut nm_setting, dns);
     }
-    // Discard DNS inherited from the existing profile, otherwise
-    // NetworkManager refuses the profile.
+    // NetworkManager rejects DNS nameservers and searches for the `disabled`
+    // and `link-local` methods, so discard any inherited from the existing
+    // profile.
     if matches!(
         nm_setting.method,
         Some(NmSettingIpMethod::Disabled | NmSettingIpMethod::LinkLocal)
